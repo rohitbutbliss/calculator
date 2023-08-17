@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        @font-face {
+            font-family: 'digital-7';
+            src: url('./fonts/digital-7.ttf');
+        }
+
+        * {
+            font-family: 'digital-7';
+        }
+
+        .screen {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            width: 500px;
+            background-color: #bccd95;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .big-screen {
+            font-size: 50px;
+        }
+
+        .small-screen {
+            font-size: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="screen">
+            <div class="small-screen">
+                0
+            </div>
+            <div class="big-screen">
+                0
+            </div>
+        </div>
+    </div>
+    <h1>Hey broski</h1>
+</body>
+<script>
+    const bigScreen = document.querySelector(".big-screen");
+    const smallScreen = document.querySelector(".small-screen");
+    let decimalValue = false;
+    let firstValue = 0;
+    let secondValue = null;
+    let operand = null;
+    document.addEventListener('keyup', function (e) {
+        let currentValue = +bigScreen.innerText;
+        let keyValue = e.key;
+        if (keyValue >= '0' && keyValue <= '9') {
+            if (bigScreen.innerText.length > 11) return;
+            let keyValue = +e.key;
+            if (!decimalValue) {
+                currentValue *= 10;
+                currentValue += keyValue;
+            } else {
+                currentValue = bigScreen.innerText + keyValue;
+            }
+
+            if (secondValue === null) firstValue = parseFloat(currentValue);
+            else secondValue = parseFloat(currentValue);
+
+            bigScreen.innerText = `${currentValue}`;
+            let smallScreenText = smallScreen.innerText;
+            if (smallScreenText === '0') {
+                smallScreen.innerText = '';
+            }
+            smallScreen.innerText = smallScreen.innerText + keyValue;
+        }
+        else if (keyValue === '+' || keyValue === '-' || keyValue === '*' || keyValue === '/') {
+            if (secondValue !== null && secondValue !== 0) {
+                performOperation();
+            }
+            else if (operand !== null) {
+                smallScreen.innerText = smallScreen.innerText.slice(0, smallScreen.innerText.length - 1);
+            };
+            operand = keyValue;
+            secondValue = 0;
+            decimalValue = false;
+            bigScreen.innerText = '0';
+            smallScreen.innerText = smallScreen.innerText + keyValue;
+        }
+        else if (keyValue === '=' || keyValue === 'Enter') {
+            if (secondValue !== null && secondValue !== 0) performOperation();
+            else return;
+            bigScreen.innerText = `${firstValue}`;
+        }
+
+        else if (keyValue === '.') {
+            if (decimalValue) return;
+            smallScreen.innerText = smallScreen.innerText + keyValue;
+            decimalValue = true;
+            bigScreen.innerText = bigScreen.innerText + keyValue;
+        }
+    });
+
+
+    function performOperation() {
+        if (secondValue === null) return;
+        if (operand === '+') {
+            firstValue = (firstValue) + secondValue;
+        }
+        else if (operand === '-') {
+            firstValue = (firstValue) - secondValue;
+        }
+        else if (operand === '*') {
+            firstValue = (firstValue) * secondValue;
+        }
+        else if (operand === '/') {
+            firstValue = (firstValue) / secondValue;
+        }
+
+
+        if (firstValue.toString().length > 12) {
+            firstValue = firstValue.toExponential(12);
+        }
+
+        firstValue = parseFloat(firstValue);
+
+        operand = null;
+        secondValue = null;
+        decimalValue = false;
+        smallScreen.innerText = `${firstValue}`;
+    }
+
+</script>
+
+</html>
