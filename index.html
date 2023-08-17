@@ -104,8 +104,12 @@
         if (smallScreenText === '0') {
             smallScreen.innerText = '';
         }
-        smallScreen.innerText = smallScreen.innerText + keyValue;
+        if (secondValue !== null && secondValue !== 0) smallScreen.innerText = smallScreen.innerText + keyValue;
+        else if (secondValue === null) smallScreen.innerText = smallScreen.innerText + keyValue;
+        // console.log(secondValue);
+        console.log(operator);
     }
+
 
     function addDecimalToScreen(keyValue) {
         // let keyValue = e.key;
@@ -117,6 +121,7 @@
 
     function addOperatorToScreen(keyValue) {
         // let keyValue = e.key;
+        if (secondValue === 0) return;
         if (secondValue !== null && secondValue !== 0) {
             performOperation();
         }
@@ -150,6 +155,7 @@
             firstValue = (firstValue) * secondValue;
         }
         else if (operator === '/') {
+            if (secondValue === 0) return;
             firstValue = (firstValue) / secondValue;
         }
 
@@ -176,6 +182,7 @@
     }
 
     function clearOneCharacter() {
+
         let newValue = bigScreen.innerText.slice(0, -1);
         if (newValue === "") newValue = "0";
         bigScreen.innerText = `${newValue}`;
@@ -198,6 +205,9 @@
                 decimalValue = false;
             }
         }
+
+        console.log(operator);
+
     }
 
 </script>
