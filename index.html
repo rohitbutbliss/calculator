@@ -51,73 +51,105 @@
 <script>
     const bigScreen = document.querySelector(".big-screen");
     const smallScreen = document.querySelector(".small-screen");
+
     let decimalValue = false;
     let firstValue = 0;
     let secondValue = null;
-    let operand = null;
+    let operator = null;
+
     document.addEventListener('keyup', function (e) {
-        let currentValue = +bigScreen.innerText;
         let keyValue = e.key;
         if (keyValue >= '0' && keyValue <= '9') {
-            if (bigScreen.innerText.length > 11) return;
-            let keyValue = +e.key;
-            if (!decimalValue) {
-                currentValue *= 10;
-                currentValue += keyValue;
-            } else {
-                currentValue = bigScreen.innerText + keyValue;
-            }
-
-            if (secondValue === null) firstValue = parseFloat(currentValue);
-            else secondValue = parseFloat(currentValue);
-
-            bigScreen.innerText = `${currentValue}`;
-            let smallScreenText = smallScreen.innerText;
-            if (smallScreenText === '0') {
-                smallScreen.innerText = '';
-            }
-            smallScreen.innerText = smallScreen.innerText + keyValue;
+            addNumberToScreen(keyValue);
         }
         else if (keyValue === '+' || keyValue === '-' || keyValue === '*' || keyValue === '/') {
-            if (secondValue !== null && secondValue !== 0) {
-                performOperation();
-            }
-            else if (operand !== null) {
-                smallScreen.innerText = smallScreen.innerText.slice(0, smallScreen.innerText.length - 1);
-            };
-            operand = keyValue;
-            secondValue = 0;
-            decimalValue = false;
-            bigScreen.innerText = '0';
-            smallScreen.innerText = smallScreen.innerText + keyValue;
+            addOperatorToScreen(keyValue);
         }
         else if (keyValue === '=' || keyValue === 'Enter') {
-            if (secondValue !== null && secondValue !== 0) performOperation();
-            else return;
-            bigScreen.innerText = `${firstValue}`;
+            completeTheCalculation();
         }
 
         else if (keyValue === '.') {
-            if (decimalValue) return;
-            smallScreen.innerText = smallScreen.innerText + keyValue;
-            decimalValue = true;
-            bigScreen.innerText = bigScreen.innerText + keyValue;
+            addDecimalToScreen(keyValue);
+        }
+
+        else if (keyValue === 'c') {
+            clearScreen();
+        }
+
+        else if (keyValue === 'Backspace') {
+            clearOneCharacter();
         }
     });
 
+    function addNumberToScreen(keyValue) {
+        let currentValue = +bigScreen.innerText;
+
+        if (bigScreen.innerText.length > 11) return;
+
+        // let keyValue = +e.key;
+
+        if (!decimalValue) {
+            currentValue *= 10;
+            currentValue += +keyValue;
+        } else {
+            currentValue = bigScreen.innerText + keyValue;
+        }
+
+        if (secondValue === null) firstValue = parseFloat(currentValue);
+        else secondValue = parseFloat(currentValue);
+
+        bigScreen.innerText = `${currentValue}`;
+        let smallScreenText = smallScreen.innerText;
+        if (smallScreenText === '0') {
+            smallScreen.innerText = '';
+        }
+        smallScreen.innerText = smallScreen.innerText + keyValue;
+    }
+
+    function addDecimalToScreen(keyValue) {
+        // let keyValue = e.key;
+        if (decimalValue) return;
+        smallScreen.innerText = smallScreen.innerText + keyValue;
+        decimalValue = true;
+        bigScreen.innerText = bigScreen.innerText + keyValue;
+    }
+
+    function addOperatorToScreen(keyValue) {
+        // let keyValue = e.key;
+        if (secondValue !== null && secondValue !== 0) {
+            performOperation();
+        }
+        else if (operator !== null) {
+            smallScreen.innerText = smallScreen.innerText.slice(0, smallScreen.innerText.length - 1);
+        };
+
+        operator = keyValue;
+        secondValue = 0;
+        decimalValue = false;
+        bigScreen.innerText = '0';
+        smallScreen.innerText = smallScreen.innerText + keyValue;
+    }
+
+    function completeTheCalculation() {
+        if (secondValue !== null && secondValue !== 0) performOperation();
+        else return;
+        if (!Number.isInteger(firstValue)) decimalValue = true;
+        bigScreen.innerText = `${firstValue}`;
+    }
 
     function performOperation() {
         if (secondValue === null) return;
-        if (operand === '+') {
+        if (operator === '+') {
             firstValue = (firstValue) + secondValue;
         }
-        else if (operand === '-') {
+        else if (operator === '-') {
             firstValue = (firstValue) - secondValue;
         }
-        else if (operand === '*') {
+        else if (operator === '*') {
             firstValue = (firstValue) * secondValue;
         }
-        else if (operand === '/') {
+        else if (operator === '/') {
             firstValue = (firstValue) / secondValue;
         }
 
@@ -128,10 +160,44 @@
 
         firstValue = parseFloat(firstValue);
 
-        operand = null;
+        operator = null;
         secondValue = null;
         decimalValue = false;
         smallScreen.innerText = `${firstValue}`;
+    }
+
+    function clearScreen() {
+        smallScreen.innerText = 0;
+        bigScreen.innerText = 0;
+        operator = null;
+        decimalValue = false;
+        firstValue = 0;
+        secondValue = null;
+    }
+
+    function clearOneCharacter() {
+        let newValue = bigScreen.innerText.slice(0, -1);
+        if (newValue === "") newValue = "0";
+        bigScreen.innerText = `${newValue}`;
+
+        if (secondValue === null) {
+            firstValue = parseFloat(bigScreen.innerText);
+            smallScreen.innerText = `${bigScreen.innerText}`;
+            if (!bigScreen.innerText.includes(".")) {
+                decimalValue = false;
+            }
+        }
+        else {
+            secondValue = parseFloat(bigScreen.innerText);
+            if (secondValue !== 0) {
+                smallScreen.innerText = smallScreen.innerText = `${firstValue}${operator}${secondValue}`;
+            } else {
+                smallScreen.innerText = smallScreen.innerText = `${firstValue}${operator}`;
+            }
+            if (!bigScreen.innerText.includes(".")) {
+                decimalValue = false;
+            }
+        }
     }
 
 </script>
