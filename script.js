@@ -146,7 +146,7 @@ function performOperation() {
         firstValue = (firstValue) / secondValue;
     }
 
-
+    // Converting value to exponential form if value is too big
     if (firstValue.toString().length > 12) {
         firstValue = firstValue.toExponential(12);
     }
@@ -178,6 +178,7 @@ function clearOneCharacter() {
     if (newValue === "") newValue = "0";
     bigScreen.innerText = `${newValue}`;
 
+    // If second value is null that means it needs to change first value else it will change second value
     if (secondValue === null) {
         firstValue = parseFloat(bigScreen.innerText);
         smallScreen.innerText = `${bigScreen.innerText}`;
